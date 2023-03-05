@@ -1,0 +1,165 @@
+.post {
+    width: 100%;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+    box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+    margin: 30px 0;
+}
+
+.postWrapper {
+    padding: 10px;
+}
+
+.postTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.titleLeft{
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.postTopLeft {
+    display: flex;
+    align-items: center;
+}
+
+.postProfileImg {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.postUsername {
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0px 0px;
+}
+
+.postDate{
+    font-size: 12px;
+}
+
+.postCenter{
+    margin: 20px 0;
+    padding-bottom: 30px;
+    border-bottom: 0.5px solid;
+}
+
+.postImg{
+    margin-top: 20px;
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+}
+
+.postBottom{
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: 15px;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.postBottomLeft{
+    display: flex;
+    align-items: center;
+}
+
+.likeIcon{
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.postLikeCounter{
+    font-size: 15px;
+}
+
+.postCommentText{
+    cursor: pointer;
+    border-bottom: 1px dashed gray;
+    font-size: 15px;
+}
+
+.total{
+    display: flex;
+    border-bottom: 1px solid;
+    padding-bottom: 15px;
+    padding-left: 20px;
+}
+.btnLike{
+    cursor: pointer;
+    padding: 5px 20px;
+    border-radius: 10px;
+    position: relative;
+
+}
+.btnLike:hover{
+    background: #F0F2F5;
+}
+.btnLike:hover .listIcon{
+    display: block;
+}
+.btnComment{
+    cursor: pointer;
+    padding: 5px 20px;
+    border-radius: 10px;
+}
+.btnComment:hover {
+    background: #F0F2F5;
+}
+
+.btnShare{
+    cursor: pointer;
+    padding: 5px 20px;
+    border-radius: 10px;
+}
+
+.listIcon{
+    background: #fff;
+    position: absolute;
+    display: none;
+    top: -26px;
+    right: 20px;
+    width: 120px;
+    margin-bottom: 10px;
+}
+.iconLike{
+    margin: 2px 5px;
+    color: #6FABFF;
+}
+.iconHeart{
+    margin: 2px 5px;
+    color: red;
+
+}
+.iconAngry{
+    margin: 2px 5px;
+    color: yellow;
+
+}
+
+.listComment{
+    display: flex;
+    display: flex;
+    flex-direction: column;
+    padding-left: 30px;
+    margin: 10px;
+}
+.aa{
+    padding-left: 40px;
+}
+.img{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+.inputText{
+    margin-left: 30px;
+
+}
