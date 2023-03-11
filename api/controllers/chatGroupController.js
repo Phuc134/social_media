@@ -51,6 +51,14 @@ exports.getAllChatGroupByUserId = async (req, res) => {
                 },
             },
             {
+                $lookup: {
+                    from: 'users',
+                    localField: 'initiator',
+                    foreignField: '_id',
+                    as: 'test'
+                }
+            },
+            {
                 $addFields: {
                     lastestMessage: {$max: "$chatGroup.createdAt"}
                 }
@@ -69,8 +77,42 @@ exports.getAllChatGroupByUserId = async (req, res) => {
                     as: 'chatGroup.authorId'
                 }
             },
+            {
+                $group: {
+                    _id: '$chatGroup.chatGroupId',
+                    messages: {
+                        $push: {
+                            text: '$chatGroup.text',
+                            user: '$chatGroup.authorId'
+                        }
+                    },
+                    initiator: {
+                        $first: '$initiator',
+                    },
+                    name: {
+                        $first: '$name'
+                    },
+                    createdAt: {
+                        $first: '$createdAt'
+                    }
 
-        ]);
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    'initiator': 1,
+                    'name': 1,
+                    'createdAt': 1,
+                    'messages.text': 1,
+                    'messages.user.id': 1,
+                    'messages.user.profilePicture': 1,
+                    'messages.user.email': 1,
+                    'messages.user.username': 1
+                }
+            }
+
+        ])
         res.status(200).json(listChatGroup);
     } catch (e) {
         res.status(500).json(e.message)
