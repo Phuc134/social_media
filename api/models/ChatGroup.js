@@ -8,7 +8,11 @@ const chatGroupSchema = new mongoose.Schema(
             default: () => uuidv4().replace(/\-/g, ""),
         },
         initiator: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        imgChatGroup: {
+            type: String
         },
         members: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
         type: Number,

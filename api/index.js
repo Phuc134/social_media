@@ -71,15 +71,12 @@ io.on("connection", (socket) => {
     socket.on('disconnect', () => {
         users = users.filter(user => user.socketId != socket.id);
     })
-    console.log(socket.id);
-    socket.on('message', ({message, roomName}) => {
-        console.log("message: " + message + " in " + roomName);
-        const outgoingMessage = {
-            user: socket.user,
-            message,
-        };
-        console.log('day la user', socket.user, message);
-        socket.to(roomName).emit('send_message', outgoingMessage);
+    socket.on('add_room', ({listRoom}) => {
+        for (let i = 0; i < listRoom.length; i++) socket.join(listRoom[i]._id);
+    })
+    socket.on('send_message', ({msg, userCurrent, idRoom}) => {
+        console.log(msg, ' ', userCurrent, ' ', idRoom);
+        socket.to(idRoom).emit('receive_message', {text: msg, user: userCurrent});
     })
 })
 httpServer.listen(8800, () => {
