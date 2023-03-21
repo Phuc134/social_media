@@ -8,34 +8,34 @@ import {
     Route,
     Redirect,
 } from "react-router-dom";
-import {useContext, useEffect} from "react";
-import {AuthContext} from "./context/AuthContext";
+import { useContext, useEffect } from "react";
+import { AuthContext } from "./context/AuthContext";
 import Messenger from "./pages/messenger/Messenger";
 import Test from "./pages/test/Test";
-import {io} from "socket.io-client";
+import { io } from "socket.io-client";
 
 const socket = io('http://localhost:8800');
 
 function App() {
-    const {user} = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     return (
         <Router>
             <Switch>
                 <Route exact path="/">
-                    {user ? <Home/> : <Register/>}
+                    {user ? <Home /> : <Register />}
                 </Route>
-                <Route path="/login">{user ? <Redirect to="/"/> : <Login/>}</Route>
+                <Route path="/login">{user ? <Redirect to="/" /> : <Login />}</Route>
                 <Route path="/register">
-                    {user ? <Redirect to="/"/> : <Register/>}
+                    {user ? <Redirect to="/" /> : <Register />}
                 </Route>
                 <Route path="/messenger">
-                    {!user ? <Redirect to='/'/> : <Messenger socket={socket}/>}
+                    {!user ? <Redirect to='/' /> : <Messenger socket={socket} />}
                 </Route>
                 <Route path="/profile/:username">
-                    <Profile/>
+                    <Profile />
                 </Route>
                 <Route path="/test">
-                    <Test/>
+                    <Test />
                 </Route>
             </Switch>
         </Router>

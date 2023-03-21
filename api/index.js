@@ -1,6 +1,6 @@
 const express = require("express");
-const {createServer} = require("http");
-const {Server} = require("socket.io")
+const { createServer } = require("http");
+const { Server } = require("socket.io")
 const app = express();
 const httpServer = createServer(app);
 
@@ -19,7 +19,7 @@ dotenv.config();
 
 mongoose.connect(
     process.env.MONGO_URL,
-    {useNewUrlParser: true, useUnifiedTopology: true},
+    { useNewUrlParser: true, useUnifiedTopology: true },
     () => {
         console.log("Connected to MongoDB");
     }
@@ -41,7 +41,7 @@ const storage = multer.diskStorage({
     },
 });
 
-const upload = multer({storage: storage});
+const upload = multer({ storage: storage });
 app.post("/api/upload", upload.single("file"), (req, res) => {
     try {
         return res.status(200).json("File uploded successfully");
@@ -60,23 +60,26 @@ app.use("/api/chat-group", chatGroupRoute);
 app.get("/", (req, res) => {
     res.send('<h1> hello </h1>')
 })
-const io = new Server(httpServer, {
-    cors: {origin: 'http://localhost:3000'},
-});
 let users = [];
 const addUser = (socketId, userId) => {
-    if (!users.some((user) => user.userId == userId)) users.push({userId, socketId})
+    if (!users.some((user) => user.userId == userId)) users.push({ userId, socketId })
 }
+
+const io = new Server(httpServer, {
+    cors: { origin: 'http://localhost:3000' },
+});
+
 io.on("connection", (socket) => {
+    console.log(socket.id);
     socket.on('disconnect', () => {
         users = users.filter(user => user.socketId != socket.id);
     })
-    socket.on('add_room', ({listRoom}) => {
+    socket.on('add_room', ({ listRoom }) => {
         for (let i = 0; i < listRoom.length; i++) socket.join(listRoom[i]._id);
     })
-    socket.on('send_message', ({msg, userCurrent, idRoom}) => {
-        console.log(msg, ' ', userCurrent, ' ', idRoom);
-        socket.to(idRoom).emit('receive_message', {text: msg, user: userCurrent});
+    socket.on('send_message', ({ msg, userCurrent, idRoom }) => {
+        console.log(msg, idRoom);
+        socket.to(idRoom).emit('receive_message', { text: msg, user: userCurrent, idRoom });
     })
 })
 httpServer.listen(8800, () => {

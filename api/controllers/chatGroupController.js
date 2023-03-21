@@ -104,13 +104,11 @@ exports.getAllChatGroupByGroupId = async (req, res) => {
                     const user = await User.findById(chatGroup[0].members[j])
                         .select('profilePicture username email');
                     chatGroup[0].user = user;
-                    console.log(user);
                 }
             }
         }
         res.status(200).json(chatGroup);
     } catch (e) {
-        console.log(e.message);
         res.status(500).json(e.message);
     }
 }
@@ -118,7 +116,6 @@ exports.getAllChatGroupByGroupId = async (req, res) => {
 exports.getAllChatGroupByUserId = async (req, res) => {
     try {
         const idUser = (req.params.id); // convert to number
-        console.log(idUser);
         const listChatGroup = await ChatGroup.aggregate([
             {
                 $match: {
@@ -137,7 +134,7 @@ exports.getAllChatGroupByUserId = async (req, res) => {
             },
             {
                 $addFields: {
-                    lastestMessage: {$max: "$chatGroup.createdAt"}
+                    lastestMessage: { $max: "$chatGroup.createdAt" }
                 }
             },
 
@@ -195,7 +192,7 @@ exports.getAllChatGroupByUserId = async (req, res) => {
                 }
             },
             {
-                $sort: {lastestMessage: -1}
+                $sort: { lastestMessage: -1 }
             },
         ]);
         res.status(200).json(listChatGroup);
