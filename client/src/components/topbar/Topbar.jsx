@@ -1,17 +1,19 @@
 import "./topbar.css";
 import { Search, Person, Chat, Notifications } from "@material-ui/icons";
 
-import { Link , Navigate } from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import {useContext, useState} from "react";
 import { AuthContext } from "../../context/AuthContext";
 export default function Topbar() {
   const { user } = useContext(AuthContext);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const [search, setSearch] = useState("");
+  const history = useHistory();
+
   const handleKeyPress = (event) => {
     if (event.key === 'Enter'){
       const url = `/search?q=${search}`;
-      <Navigate to="/test"/>
+      history.push(url)
     }
   }
   return (

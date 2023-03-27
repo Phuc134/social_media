@@ -15,9 +15,32 @@ exports.logOut = async (req, res) => {
 }
 
 exports.searchUser = async(req, res) => {
-    const regex = new RegExp(req.query.name,"i");
-    const listUser = await  User.find({"username": regex});
-    console.log(listUser);
+    try {
+        console.log(req.body.username);
+
+        const regex = new RegExp(req.query.q, "i"); //req.query.q =te
+        const listUser = await User.find({
+            $and: [
+                {"username": regex},
+                {"username": {$ne: req.body.username}}
+            ]
+        });
+        const newListUser = JSON.parse(JSON.stringify(listUser));;
+        const user = await User.findOne({"username": req.body.username});
+        for (let i=0;i< newListUser.length;i++){
+            newListUser[i].check = 0;
+            for (let j=0;j<user.friends.length;j++){
+                if (newListUser[i]._id == user.friends[j]){
+                    newListUser[i].check=1;
+                    break;
+                }
+            }
+        }
+        res.status(200).send(newListUser);
+    }
+    catch (e){
+        res.status(500).json(e.message);
+    }
 }
 
 exports.updateUser = async (req, res) => {

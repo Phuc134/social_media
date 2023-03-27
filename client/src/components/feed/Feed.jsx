@@ -8,11 +8,13 @@ import { AuthContext } from "../../context/AuthContext";
 export default function Feed({ username }) {
   const [posts, setPosts] = useState([]);
   const { user } = useContext(AuthContext);
+  const PF = process.env.REACT_APP_PUBLIC_FOLDER;
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const res = username
-        ? await axios.get("/posts/profile/" + username)
+      console.log(username);
+      const res = user
+        ? await axios.get("/posts/profile/" + user.username)
         : await axios.get("posts/timeline/" + user._id);
       setPosts(
         res.data.sort((p1, p2) => {
