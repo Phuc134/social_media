@@ -13,6 +13,9 @@ import { AuthContext } from "./context/AuthContext";
 import Messenger from "./pages/messenger/Messenger";
 import Test from "./pages/test/Test";
 import { io } from "socket.io-client";
+import UpdateProfile from "./pages/updateProfile/UpdateProfile";
+import SearchFriend from "./pages/searchFriend/SearchFriend";
+import InviteFriend from "./pages/inviteFriend/InviteFriend";
 
 const socket = io('http://localhost:8800');
 
@@ -34,8 +37,14 @@ function App() {
                 <Route path="/profile/:username">
                     <Profile />
                 </Route>
-                <Route path="/test">
-                    <Test />
+                <Route path="/update-user">
+                    <UpdateProfile />
+                </Route>
+                <Route path="/search">
+                    <SearchFriend />
+                </Route>
+                <Route path="/invite-friend">
+                    <InviteFriend/>
                 </Route>
             </Switch>
         </Router>

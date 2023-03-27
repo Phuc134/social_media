@@ -6,6 +6,10 @@ import SendIcon from "@mui/icons-material/Send";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import CreateChatGroup from "../../components/createChatGroup/CreateChatGroup";
 
 export default function Messenger({ socket }) {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -35,7 +39,6 @@ export default function Messenger({ socket }) {
       .then((res) => {
         setListChatGroup(res.data);
         socket.emit("add_room", { listRoom: res.data });
-        console.log(res);
       });
     socket.on("receive_message", ({ text, user, idRoom }) => {
       const rs = {
@@ -87,21 +90,71 @@ export default function Messenger({ socket }) {
       .get(`http://localhost:8800/api/chat-group/${userCurrent._id}/${idChat}`)
       .then((res) => {
         console.log(res);
-        setMessage(res.data[0].messages);
+        setMessage(res.data[0].messages ? res.data[0].messages : []);
         setInfoChat(res.data[0]);
       })
       .catch((e) => {
         console.log(e.message);
       });
   };
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  const handleSubmitCreateChat = (tags, name) => {
+    const members = [];
+    for (let i = 0; i < tags.length; i++) {
+      members.push(tags[i].id);
+    }
+    const initiator = userCurrent._id;
+    members.push(userCurrent._id);
+    axios.post(`chat-group`, { members, initiator, name }).then((res) => {
+      axios
+        .get(
+          `http://localhost:8800/api/chat-group/${
+            JSON.parse(localStorage.getItem("user"))._id
+          }`
+        )
+        .then((res) => {
+          setListChatGroup(res.data);
+          socket.emit("add_room", { listRoom: res.data });
+          handleClose();
+          console.log(res);
+        });
+    });
+    console.log(tags);
+  };
   return (
     <>
       <div>
         <Topbar />
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Tạo Nhóm</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <CreateChatGroup
+              idUser={userCurrent?._id}
+              handleClose={handleClose}
+              handleSubmitCreateChat={handleSubmitCreateChat}
+            />
+          </Modal.Body>
+        </Modal>
         <div className="messenger">
           <div className="chatMenu">
-            <div className="chatMenuWrapper">
-              <h1 className="title">Chats</h1>
+            <div className="chatMenuWrapper" style={{ overflow: "auto" }}>
+              <h1 className="title">
+                Chats
+                <ControlPointIcon
+                  onClick={handleShow}
+                  style={{
+                    float: "right",
+                    marginRight: "60px",
+                    marginTop: "4px",
+                    cursor: "pointer",
+                  }}
+                />
+              </h1>
               <input
                 placeholder="Search for friends"
                 className="chatMenuInput"
@@ -110,7 +163,7 @@ export default function Messenger({ socket }) {
                 return (
                   <Conversation
                     key={item._id}
-                    user={userCurrent}
+                    user={item.user}
                     name={item.name}
                     handleClickConversation={handleClickConversation}
                     idConversation={item._id}
@@ -126,13 +179,15 @@ export default function Messenger({ socket }) {
                   <img
                     className="imgTop"
                     src={
-                      userCurrent.profilePicture
-                        ? userCurrent.profilePicture
+                      infoChat?.user?.profilePicture
+                        ? PF + infoChat?.user?.profilePicture
                         : PF + "person/noAvatar.png"
                     }
                     alt=""
                   />
-                  <label className="labelTop">{userCurrent.username}</label>
+                  <label className="labelTop">
+                    {infoChat?.user ? infoChat?.user.username : infoChat.name}
+                  </label>
                 </div>
                 <div className="chatBoxWrapper">
                   {message.map((item, index) => {
@@ -140,6 +195,7 @@ export default function Messenger({ socket }) {
                       <Message
                         key={index}
                         msg={item.text}
+                        user={item.user[0]}
                         own={userCurrent._id == item.user[0]._id ? true : false}
                         ref={lastMessageRef}
                       />

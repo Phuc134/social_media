@@ -1,0 +1,14 @@
+.container-invite-user1{
+    display: flex;
+}
+.sidebar-invite-user{
+    flex: 1
+}
+
+.list-invite-friend{
+    display: flex;
+    gap:20px;
+    flex-wrap: wrap;
+    padding: 30px;
+    flex:3
+}

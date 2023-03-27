@@ -1,0 +1,10 @@
+.container-friend {
+  display: flex;
+}
+.side-bar {
+  flex: 1;
+}
+.list-search-friend{
+  padding: 20px 120px;
+  flex: 3;
+}
