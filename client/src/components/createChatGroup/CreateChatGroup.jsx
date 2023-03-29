@@ -8,18 +8,19 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 const CreateChatGroup = ({ handleClose, handleSubmitCreateChat, idUser }) => {
-  const [file, setFile] = useState();
+  const [file, setFile] = useState(null);
   const [name, setName] = useState();
   const [suggestions, setSuggestions] = useState([]);
   useEffect(() => {
+    console.log(idUser);
     axios
       .get(`/users/${idUser}`)
       .then((res) => {
         const suggestions1 = [];
         console.log(res.data[0]);
         for (let i = 0; i < res.data[0].friends.length; i++) {
-          const item = res.data[0].friends[i];
-          suggestions1.push({ id: item._id[0], text: item.username[0] });
+          const item = res.data[0].friends[i].user[0];
+          suggestions1.push({ id: item._id, text: item.username });
         }
         setSuggestions(suggestions1);
       })
@@ -124,7 +125,7 @@ const CreateChatGroup = ({ handleClose, handleSubmitCreateChat, idUser }) => {
           <Button
             disabled={tags.length > 1 ? false : true}
             variant="primary"
-            onClick={() => handleSubmitCreateChat(tags, name)}
+            onClick={() => handleSubmitCreateChat(tags, name, file)}
           >
             Tạo nhóm
           </Button>

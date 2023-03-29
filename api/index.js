@@ -61,7 +61,6 @@ app.use("/api/chat-group", chatGroupRoute);
 app.get("/", (req, res) => {
     res.send('<h1> hello </h1>')
 })
-let users = [];
 const addUser = (socketId, userId) => {
     if (!users.some((user) => user.userId == userId)) users.push({ userId, socketId })
 }
@@ -69,14 +68,32 @@ const addUser = (socketId, userId) => {
 const io = new Server(httpServer, {
     cors: { origin: 'http://localhost:3000' },
 });
-
+const  users= [];
 io.on("connection", (socket) => {
     console.log(socket.id);
     socket.on('disconnect', () => {
-        users = users.filter(user => user.socketId != socket.id);
+
     })
-    socket.on('add_room', ({ listRoom }) => {
+    socket.on('add_room', ({ listRoom ,id}) => {
         for (let i = 0; i < listRoom.length; i++) socket.join(listRoom[i]._id);
+        users.push({socket: socket, user_id: id});
+    })
+    socket.on('add_room_update',({listRoom})=> {
+        console.log('test');
+        console.log(users);
+        for (let i = 0; i < listRoom.length; i++) {
+            socket.join(listRoom[i]._id);
+
+            for (let j=0; j<listRoom[i].members.length; j++){
+                    for (let k=0;k<users.length;k++){
+                        if (users[k].user_id == listRoom[i].members[j]) {
+                            users[k].socket.join(listRoom[i]._id);
+                        }
+                    }
+            }
+
+        }
+
     })
     socket.on('send_message', ({ msg, userCurrent, idRoom }) => {
         console.log(msg, idRoom);

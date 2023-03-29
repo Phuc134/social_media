@@ -14,11 +14,15 @@ export default function UpdateProfile() {
   const [password, setPassword] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState(null);
   const { user, dispatch } = useContext(AuthContext);
-
+  const [email,setEmail] = useState();
+  const [username, setUsername] = useState();
   useEffect(() => {
     if (user) {
       if (user.profilePicture)
         setFile(process.env.REACT_APP_PUBLIC_FOLDER + user.profilePicture);
+      else setFile(process.env.REACT_APP_PUBLIC_FOLDER +      "person/noAvatar.png")
+      setEmail(user.email);
+      setUsername(user.username);
     }
   }, []);
   const clickImage = () => {
@@ -63,6 +67,7 @@ export default function UpdateProfile() {
                 <div>email</div>
                 <InputGroup className="mb-3" style={{ width: "210px" }}>
                   <Form.Control
+                      value={email}
                     type="email"
                     readOnly="true"
                     placeholder="Email"
@@ -75,6 +80,7 @@ export default function UpdateProfile() {
                 <div>username</div>
                 <InputGroup className="mb-3" style={{ width: "210px" }}>
                   <Form.Control
+                      value={username}
                     placeholder="Username"
                     readOnly="true"
                     aria-label="Username"

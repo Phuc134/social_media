@@ -2,22 +2,10 @@ const User = require('../models/User');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-
-exports.signUp = async (req, res) => {
-
-}
-
-exports.refreshToken = async (req, res) => {
-}
-
-exports.logOut = async (req, res) => {
-
-}
+const {createChatGroup} = require("./chatGroupController");
 
 exports.searchUser = async(req, res) => {
     try {
-        console.log(req.body.username);
-
         const regex = new RegExp(req.query.q, "i"); //req.query.q =te
         const listUser = await User.find({
             $and: [
@@ -25,13 +13,21 @@ exports.searchUser = async(req, res) => {
                 {"username": {$ne: req.body.username}}
             ]
         });
-        const newListUser = JSON.parse(JSON.stringify(listUser));;
+        const newListUser = JSON.parse(JSON.stringify(listUser));
         const user = await User.findOne({"username": req.body.username});
         for (let i=0;i< newListUser.length;i++){
             newListUser[i].check = 0;
             for (let j=0;j<user.friends.length;j++){
                 if (newListUser[i]._id == user.friends[j]){
                     newListUser[i].check=1;
+                    break;
+                }
+            }
+        }
+        for (let i=0;i< newListUser.length;i++){
+            for (let j=0;j<user.listInvite.length;j++){
+                if (newListUser[i]._id == user.listInvite[j]){
+                    newListUser[i].check=2;
                     break;
                 }
             }
@@ -86,34 +82,68 @@ exports.getUserById = async (req, res) => {
                 _id: { $eq: mongoose.Types.ObjectId(req.params.id) }
             },
 
-        }, {
-            $unwind: '$searchFriend',
-        }, {
-            $lookup: {
-                from: 'users',
-                localField: 'friends',
-                foreignField: '_id',
-                as: 'friends'
-            }
-        }, {
+        },{
+            $unwind: '$friends'
+        },{
+           $lookup : {
+               from: 'users',
+               localField: 'friends',
+               foreignField: '_id',
+               as: 'friends'
+           }
+        },{
             $group: {
                 _id: '$_id',
                 friends: {
                     $push: {
-                        username: '$searchFriend.username',
-                        email: '$searchFriend.email',
-                        _id: '$searchFriend._id',
+                        user: '$friends'
                     }
                 }
-
             }
         }])
         res.status(200).json(user);
     } catch (e) {
         console.log(e.message);
-        res.status(5000).json(e.message);
+        res.status(500).json(e.message);
     }
 
+}
+
+exports.addPending = async (req, res) => {
+    try{
+        const idUser = req.body.idUser;
+        const idFriend = req.body.idFriend;
+        const user = await User.findOne({ _id: idUser });
+        const friend = await  User.findOne({_id: idFriend});
+        friend.listReceive.push(idUser);
+        user.listInvite.push(idFriend);
+        await user.save();
+        await friend.save();
+        res.status(200).json(user);
+    }
+    catch (e){
+        res.status(500).json(err.message);
+    }
+}
+
+exports.removePending = async (req, res) => {
+    try{
+        const idUser = req.body.idUser;
+        const idFriend = req.body.idFriend;
+        const user = await User.findOne({ _id: idUser });
+        const friend = await  User.findOne({_id: idFriend});
+        user.listInvite = user.listInvite.filter(item =>
+            item != idFriend
+        );
+        friend.listReceive = friend.listReceive.filter(item => item !=idUser)
+        await user.save();
+        await friend.save();
+
+        res.status(200).json(user);
+    }
+    catch (e){
+        res.status(500).json(err.message);
+    }
 }
 
 exports.addFriend = async (req, res) => {
@@ -124,10 +154,48 @@ exports.addFriend = async (req, res) => {
         user.friends.push(idFriend);
         const friend = await User.findOne({ _id: idFriend });
         friend.friends.push(idUser);
-        friend.save();
-        user.save();
-        res.status(200).json("add success");
+        friend.listInvite = friend.listInvite.filter(item =>
+            item != idUser
+        );
+        user.listReceive = user.listReceive.filter(item => item !=idFriend)
+        await user.save();
+        await friend.save();
+         res.status(200).json("add friend success");
     } catch (e) {
         res.status(500).json(e.message);
     }
+}
+
+exports.getListPending = async (req, res) => {
+    try {
+        const idUser = req.params.id;
+        const listReceive = await User.aggregate([{
+            $match: {
+                _id: mongoose.Types.ObjectId(idUser)
+            }
+        },{
+            $unwind: '$listReceive'
+        }, {
+            $lookup: {
+                from: 'users',
+                localField: 'listReceive',
+                foreignField: '_id',
+                as: 'listReceive'
+            }        },            {
+            $group: {
+                _id: '$_id',
+                listReceive: {
+                    $push:{user:  '$listReceive'}
+                },
+
+            }
+        },
+        ])
+        console.log(listReceive);
+        res.status(200).json(listReceive);
+    }
+    catch (e){
+        res.status(500).json(e.message);
+    }
+
 }

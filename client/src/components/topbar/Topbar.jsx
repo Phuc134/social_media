@@ -40,17 +40,17 @@ export default function Topbar() {
           <span className="topbarLink">Timeline</span>
         </div>
         <div className="topbarIcons">
-          <div className="topbarIconItem">
-            <Person />
-            <span className="topbarIconBadge">1</span>
+          <Link to="/invite-friend">
+
+        <div className="topbarIconItem">
+              <Person  style={{color:"white"}}/>
           </div>
+        </Link>
           <div className="topbarIconItem">
             <Link to="/messenger"><Chat style={{color:"white"}}/></Link>
-            <span className="topbarIconBadge">2</span>
           </div>
           <div className="topbarIconItem">
             <Notifications />
-            <span className="topbarIconBadge">1</span>
           </div>
         </div>
         <Link to={`/profile/${user.username}`}>

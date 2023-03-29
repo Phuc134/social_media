@@ -28,10 +28,14 @@ const UserSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
-        listInvite: {
-            type: Array,
-            default: [],
-        },
+        listInvite: [{
+            type: mongoose.Schema.Types.ObjectId, ref: 'User'
+
+        }],
+        listReceive:  [{
+            type: mongoose.Schema.Types.ObjectId, ref: 'User'
+
+        }],
         friends: [{
             type: mongoose.Schema.Types.ObjectId, ref: 'User'
         }]

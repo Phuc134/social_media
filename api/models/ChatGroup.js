@@ -10,9 +10,11 @@ const chatGroupSchema = new mongoose.Schema(
         initiator: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
+            default: null,
         },
         imgChatGroup: {
-            type: String
+            type: String,
+            default: null
         },
         members: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
         type: Number,

@@ -20,6 +20,7 @@ export default function Messenger({ socket }) {
   const [userCurrent, setUserCurrent] = useState();
   const [listChatGroup, setListChatGroup] = useState([]);
   const infoChatRef = useRef(null);
+  const [imgTop, setImgTop] = useState(null);
   useEffect(() => {
     setUserCurrent(JSON.parse(localStorage.getItem("user")));
     if (lastMessageRef.current) {
@@ -38,7 +39,8 @@ export default function Messenger({ socket }) {
       )
       .then((res) => {
         setListChatGroup(res.data);
-        socket.emit("add_room", { listRoom: res.data });
+        socket.emit("add_room", { listRoom: res.data, id: JSON.parse(localStorage.getItem("user"))._id
+        });
       });
     socket.on("receive_message", ({ text, user, idRoom }) => {
       const rs = {
@@ -85,11 +87,17 @@ export default function Messenger({ socket }) {
   const handleInputChange = (e) => {
     setNewMessage(e.target.value);
   };
-  const handleClickConversation = (idChat) => {
+  const handleClickConversation = (idChat, user, imgChatGroup) => {
+    setImgTop( user
+        ? user?.profilePicture
+            ? PF + user?.profilePicture
+            : PF + "person/noAvatar.png"
+        : imgChatGroup?
+            PF + imgChatGroup :
+            PF + "person/noAvatar.png")
     axios
       .get(`http://localhost:8800/api/chat-group/${userCurrent._id}/${idChat}`)
       .then((res) => {
-        console.log(res);
         setMessage(res.data[0].messages ? res.data[0].messages : []);
         setInfoChat(res.data[0]);
       })
@@ -101,14 +109,24 @@ export default function Messenger({ socket }) {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const handleSubmitCreateChat = (tags, name) => {
+  const handleSubmitCreateChat = async (tags, name, file) => {
     const members = [];
     for (let i = 0; i < tags.length; i++) {
       members.push(tags[i].id);
     }
     const initiator = userCurrent._id;
     members.push(userCurrent._id);
-    axios.post(`chat-group`, { members, initiator, name }).then((res) => {
+    let fileName;
+    if (file) {
+      const data = new FormData();
+      fileName = Date.now() + file.name;
+      const data1 = { fileName: fileName };
+      data.append("name", fileName);
+      data.append("file", file);
+      await axios.post("/upload", data);
+    }
+    console.log(fileName);
+    axios.post(`chat-group`, { members, initiator,name,  fileName }).then((res) => {
       axios
         .get(
           `http://localhost:8800/api/chat-group/${
@@ -117,12 +135,11 @@ export default function Messenger({ socket }) {
         )
         .then((res) => {
           setListChatGroup(res.data);
-          socket.emit("add_room", { listRoom: res.data });
+          console.log(res.data);
+          socket.emit("add_room_update", { listRoom: res.data });
           handleClose();
-          console.log(res);
         });
     });
-    console.log(tags);
   };
   return (
     <>
@@ -160,11 +177,13 @@ export default function Messenger({ socket }) {
                 className="chatMenuInput"
               />
               {listChatGroup.map((item) => {
+                console.log(item);
                 return (
                   <Conversation
                     key={item._id}
                     user={item.user}
                     name={item.name}
+                    imgChatGroup={item.imgChatGroup}
                     handleClickConversation={handleClickConversation}
                     idConversation={item._id}
                   />
@@ -174,14 +193,13 @@ export default function Messenger({ socket }) {
           </div>
           {infoChat ? (
             <>
+
               <div className="chatBox">
-                <div className="chatBotTop">
+                <div className="chatBotTop" style={{width: "635px"}}>
                   <img
                     className="imgTop"
                     src={
-                      infoChat?.user?.profilePicture
-                        ? PF + infoChat?.user?.profilePicture
-                        : PF + "person/noAvatar.png"
+                     imgTop
                     }
                     alt=""
                   />

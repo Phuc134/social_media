@@ -16,7 +16,6 @@ const Message = forwardRef(({ own, msg, user }, ref) => {
         />
         <p className="messageText">{msg}</p>
       </div>
-      <div className="messageBottom"> 1 hour ago</div>
       <div ref={ref}></div>
     </div>
   );

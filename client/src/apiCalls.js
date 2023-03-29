@@ -2,9 +2,7 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 import {io} from "socket.io-client";
 
-
 export const loginCall = async (userCredential, dispatch, setSocket) => {
-
     dispatch({type: "LOGIN_START"});
     try {
         const res = await axios.post("/auth/login", userCredential);

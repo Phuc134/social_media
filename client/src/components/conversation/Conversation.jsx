@@ -3,17 +3,19 @@ import "./conversation.css";
 export default function Conversation({
   user,
   name,
-  idConversation,
+  idConversation, imgChatGroup,
   handleClickConversation,
 }) {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   return (
     <div
-      onClick={() => {
-        handleClickConversation(idConversation);
+
+        onClick={() => {
+        handleClickConversation(idConversation, user, imgChatGroup);
       }}
       className="conversation"
     >
+
       <img
         className="conversationImg"
         src={
@@ -21,7 +23,9 @@ export default function Conversation({
             ? user?.profilePicture
               ? PF + user?.profilePicture
               : PF + "person/noAvatar.png"
-            : PF + "person/noAvatar.png"
+            : imgChatGroup?
+                  PF + imgChatGroup :
+                  PF + "person/noAvatar.png"
         }
         alt=""
       />

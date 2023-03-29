@@ -19,7 +19,6 @@ export default function Friend() {
     axios.post(`http://localhost:8800/api/users/search?q=${searchValue}`,{username: JSON.parse(localStorage.getItem("user")).username})
         .then((res)=> {
             console.log(res.data);
-
             setListUser(res.data);
         })
   },[searchValue, location.search])
@@ -33,7 +32,10 @@ export default function Friend() {
         </div>
         <div className="list-search-friend">
             {listUser.map((item)=> {
-               return  <SearchUser user={item}/>
+               return  <SearchUser user={item}
+                                   userCurrent={userCurrent}
+                                   url={`http://localhost:8800/api/users/search?q=${searchValue}`}
+                                       setListUser={setListUser}/>
             })}
         </div>
       </div>

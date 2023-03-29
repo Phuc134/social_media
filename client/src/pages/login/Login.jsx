@@ -4,6 +4,7 @@ import {loginCall} from "../../apiCalls";
 import {AuthContext} from "../../context/AuthContext";
 import {CircularProgress} from "@material-ui/core";
 import {SocketContext} from "../../context/SocketContext";
+import {Link} from "react-router-dom";
 
 
 export default function Login() {
@@ -26,9 +27,9 @@ export default function Login() {
         <div className="login">
             <div className="loginWrapper">
                 <div className="loginLeft">
-                    <h3 className="loginLogo">Lamasocial</h3>
+                    <h3 className="loginLogo">FaceBook phake</h3>
                     <span className="loginDesc">
-            Connect with friends and the world around you on Lamasocial.
+            Hello
           </span>
                 </div>
                 <div className="loginRight">
@@ -56,13 +57,15 @@ export default function Login() {
                             )}
                         </button>
                         <span className="loginForgot">Forgot Password?</span>
-                        <button className="loginRegisterButton">
+                        <Link to="/register"  >
+                        <button className="loginRegisterButton" style={{textAlign: "center"}}>
                             {isFetching ? (
                                 <CircularProgress color="white" size="20px"/>
                             ) : (
                                 "Create a New Account"
                             )}
                         </button>
+                        </Link>
                     </form>
                 </div>
             </div>
