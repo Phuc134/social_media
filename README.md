@@ -1,11 +1,20 @@
 # social_media
-##Sever
+## Sever
 cd api
+
 npm i --force
-.env
+
+Create .env
+
+### Update file .env
 JWT_SECRET
+
 REFRESH_TOKEN_SECRET
+
 MONGO_URL
-##Client
-.env
+## Client
+Create .env
+
+### Update file .env
+
 REACT_APP_PUBLIC_FOLDER = http://localhost:8800/images/
