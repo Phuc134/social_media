@@ -11,13 +11,12 @@ import {
 import { useContext, useEffect } from "react";
 import { AuthContext } from "./context/AuthContext";
 import Messenger from "./pages/messenger/Messenger";
-import Test from "./pages/test/Test";
-import { io } from "socket.io-client";
 import UpdateProfile from "./pages/updateProfile/UpdateProfile";
 import SearchFriend from "./pages/searchFriend/SearchFriend";
 import InviteFriend from "./pages/inviteFriend/InviteFriend";
+import { getSocketInstance } from "./connectSocket";
 
-const socket = io('http://localhost:8800');
+const socket = getSocketInstance();
 
 function App() {
     const { user } = useContext(AuthContext);
@@ -32,7 +31,7 @@ function App() {
                     {user ? <Redirect to="/" /> : <Register />}
                 </Route>
                 <Route path="/messenger">
-                    {!user ? <Redirect to='/' /> : <Messenger socket={socket} />}
+                    {!user ? <Redirect to='/' /> : <Messenger />}
                 </Route>
                 <Route path="/profile/:username">
                     <Profile />

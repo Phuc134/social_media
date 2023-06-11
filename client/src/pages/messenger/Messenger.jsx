@@ -10,8 +10,9 @@ import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import CreateChatGroup from "../../components/createChatGroup/CreateChatGroup";
+import { getSocketInstance } from "../../connectSocket";
 
-export default function Messenger({ socket }) {
+export default function Messenger() {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const lastMessageRef = useRef(null);
   const [infoChat, setInfoChat] = useState(null);
@@ -21,6 +22,26 @@ export default function Messenger({ socket }) {
   const [listChatGroup, setListChatGroup] = useState([]);
   const infoChatRef = useRef(null);
   const [imgTop, setImgTop] = useState(null);
+  const [socket, setSocket] = useState(null);
+  const [listRoom1, setListRoom1] = useState([]);
+
+  useEffect(() => {
+    const getAsyncSocket = async () => {
+      const socket = await getSocketInstance();
+      socket.on("receive_message", ({ text, user, idRoom }) => {
+        const rs = {
+          text: text,
+          user: Array.of(user),
+        };
+        if (idRoom == infoChatRef.current) {
+          setMessage((prev) => [...prev, rs]);
+        }
+      });
+      setSocket(socket);
+    }
+    getAsyncSocket();
+
+  },[])
   useEffect(() => {
     setUserCurrent(JSON.parse(localStorage.getItem("user")));
     if (lastMessageRef.current) {
@@ -31,6 +52,11 @@ export default function Messenger({ socket }) {
     infoChatRef.current = infoChat?._id;
   }, [infoChat?._id]);
   useEffect(() => {
+    const getSocket = async (res) => {
+      const socket = await getSocketInstance();
+      socket.emit("add_room", { listRoom: res.data, id: JSON.parse(localStorage.getItem("user"))._id
+      });     
+    }
     axios
       .get(
         `http://localhost:8800/api/chat-group/${
@@ -39,23 +65,18 @@ export default function Messenger({ socket }) {
       )
       .then((res) => {
         setListChatGroup(res.data);
-        socket.emit("add_room", { listRoom: res.data, id: JSON.parse(localStorage.getItem("user"))._id
-        });
+        getSocket(res);  
+      
       });
-    socket.on("receive_message", ({ text, user, idRoom }) => {
-      const rs = {
-        text: text,
-        user: Array.of(user),
-      };
-      if (idRoom == infoChatRef.current) {
-        setMessage((prev) => [...prev, rs]);
-      }
-    });
-    return () => {
-      socket.disconnect();
-    };
+ 
   }, []);
   useEffect(() => {});
+  useEffect(()=> {
+    const getList = async() => {
+      const res = await axios.get( `http://localhost:8800/api/chat-group/${JSON.parse(localStorage.getItem("user"))._id}`);
+      setListChatGroup(res.data);
+    }
+  },[listRoom1])
   const handleSubmit = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -125,7 +146,6 @@ export default function Messenger({ socket }) {
       data.append("file", file);
       await axios.post("/upload", data);
     }
-    console.log(fileName);
     axios.post(`chat-group`, { members, initiator,name,  fileName }).then((res) => {
       axios
         .get(
@@ -137,6 +157,7 @@ export default function Messenger({ socket }) {
           setListChatGroup(res.data);
           console.log(res.data);
           socket.emit("add_room_update", { listRoom: res.data });
+          setListRoom1(res.data);
           handleClose();
         });
     });

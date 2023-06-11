@@ -3,7 +3,6 @@ import "./login.css";
 import {loginCall} from "../../apiCalls";
 import {AuthContext} from "../../context/AuthContext";
 import {CircularProgress} from "@material-ui/core";
-import {SocketContext} from "../../context/SocketContext";
 import {Link} from "react-router-dom";
 
 
@@ -11,7 +10,6 @@ export default function Login() {
     const email = useRef();
     const password = useRef();
     const {isFetching, dispatch} = useContext(AuthContext);
-    const {setSocket} = useContext(SocketContext);
 
 
     const handleClick = (e) => {
@@ -19,7 +17,6 @@ export default function Login() {
         loginCall(
             {email: email.current.value, password: password.current.value},
             dispatch,
-            setSocket
         );
     };
 

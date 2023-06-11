@@ -7,11 +7,10 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { Add, Remove } from "@material-ui/icons";
 
-export default function Rightbar({ user }) {
+export default function Rightbar() {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const [friends, setFriends] = useState([]);
-  const { user: currentUser, dispatch } = useContext(AuthContext);
-
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const getFriends = async () => {

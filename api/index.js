@@ -80,18 +80,10 @@ io.on("connection", (socket) => {
     })
     socket.on('add_room_update',({listRoom})=> {
         console.log('test');
+        console.log('List Room ', listRoom);
         console.log(users);
         for (let i = 0; i < listRoom.length; i++) {
             socket.join(listRoom[i]._id);
-
-            for (let j=0; j<listRoom[i].members.length; j++){
-                    for (let k=0;k<users.length;k++){
-                        if (users[k].user_id == listRoom[i].members[j]) {
-                            users[k].socket.join(listRoom[i]._id);
-                        }
-                    }
-            }
-
         }
 
     })
