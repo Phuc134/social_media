@@ -15,13 +15,15 @@ import UpdateProfile from "./pages/updateProfile/UpdateProfile";
 import SearchFriend from "./pages/searchFriend/SearchFriend";
 import InviteFriend from "./pages/inviteFriend/InviteFriend";
 import { getSocketInstance } from "./connectSocket";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
 
 const socket = getSocketInstance();
 
 function App() {
     const { user } = useContext(AuthContext);
     return (
-        <Router>
+        <>            <Router>
             <Switch>
                 <Route exact path="/">
                     {user ? <Home /> : <Login />}
@@ -43,10 +45,25 @@ function App() {
                     <SearchFriend />
                 </Route>
                 <Route path="/invite-friend">
-                    <InviteFriend/>
+                    <InviteFriend />
                 </Route>
             </Switch>
         </Router>
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+            {/* Same as */}
+        </>
+
     );
 }
 

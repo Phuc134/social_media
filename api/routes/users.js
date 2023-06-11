@@ -13,6 +13,7 @@ router.get('/', async (req, res) => {
 })
 //get list search
 router.post("/search", userController.searchUser)
+router.post("/remove-friend", userController.removeFriendOfUser)
 //update user 
 router.put('/update/:username', userController.updateUser)
 //add friend
