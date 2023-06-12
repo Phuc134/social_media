@@ -54,6 +54,7 @@ const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
 const postRoute = require("./routes/posts");
 const chatGroupRoute = require("./routes/chatGroup");
+const User = require("./models/User");
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
@@ -61,23 +62,43 @@ app.use("/api/chat-group", chatGroupRoute);
 app.get("/", (req, res) => {
     res.send('<h1> hello </h1>')
 })
-const addUser = (socketId, userId) => {
-    if (!users.some((user) => user.userId == userId)) users.push({ userId, socketId })
-}
+
 
 const io = new Server(httpServer, {
     cors: { origin: 'http://localhost:3000' },
 });
 const  users= [];
+const checkUserId = (user_id) => {
+    for (let i=0; i< users.length; i++)
+        if (user_id == users[i].user_id) return false;
+    return true;
+}
 io.on("connection", (socket) => {
     console.log(socket.id);
-    socket.on('disconnect', () => {
+    socket.on("login_success", ({user_id}) => {
+        if (checkUserId(user_id)) users.push({socket: socket, user_id: user_id});
 
     })
+
+    socket.on("accept_friend", async ({user_id}) => {
+        console.log('user_id ', user_id);
+        console.log(users);
+        const user = await User.findById(user_id);
+        for (let i=0;i<users.length;i++) {
+            if (user_id == users[i].user_id) {
+                console.warn('000000000000000');
+                console.log(users[i].socket);
+                users[i].socket.emit("notification_friend",({username: user.username}));
+                users[i].socket.emit("update_search_friend");
+                users[i].socket.emit("update_chat_group");
+            }
+        }
+    })
+
     socket.on('add_room', ({ listRoom ,id}) => {
         for (let i = 0; i < listRoom.length; i++) socket.join(listRoom[i]._id);
-        users.push({socket: socket, user_id: id});
     })
+
     socket.on('add_room_update',({listRoom})=> {
         console.log('test');
         console.log('List Room ', listRoom);

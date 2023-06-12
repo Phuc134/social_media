@@ -5,6 +5,7 @@ import Topbar from "../../components/topbar/Topbar";
 import {useEffect, useState} from "react";
 import {useLocation} from "react-router-dom";
 import axios from "axios";
+import { getSocketInstance } from "../../connectSocket";
 export default function Friend() {
     const location = useLocation();
     const searchParams = new URLSearchParams(window.location.search);
@@ -16,6 +17,17 @@ export default function Friend() {
     },[])
   useEffect(()=>{
     console.log(searchValue);
+    const getSocket = async () => {
+      const socket = await getSocketInstance();
+      socket.on("update_search_friend", ()=>{
+        axios.post(`http://localhost:8800/api/users/search?q=${searchValue}`,{username: JSON.parse(localStorage.getItem("user")).username})
+        .then((res)=> {
+            console.log(res.data);
+            setListUser(res.data);
+        })
+      })
+    }
+    getSocket();
     axios.post(`http://localhost:8800/api/users/search?q=${searchValue}`,{username: JSON.parse(localStorage.getItem("user")).username})
         .then((res)=> {
             console.log(res.data);

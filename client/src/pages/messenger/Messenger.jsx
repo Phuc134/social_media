@@ -37,6 +37,10 @@ export default function Messenger() {
           setMessage((prev) => [...prev, rs]);
         }
       });
+      socket.on("update_chat_group",async () => {
+        const res = await axios.get( `http://localhost:8800/api/chat-group/${JSON.parse(localStorage.getItem("user"))._id}`);
+        setListChatGroup(res.data);
+      })
       setSocket(socket);
     }
     getAsyncSocket();

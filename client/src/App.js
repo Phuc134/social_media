@@ -18,10 +18,10 @@ import { getSocketInstance } from "./connectSocket";
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 
-const socket = getSocketInstance();
 
 function App() {
     const { user } = useContext(AuthContext);
+
     return (
         <>            <Router>
             <Switch>
@@ -59,7 +59,7 @@ function App() {
                 pauseOnFocusLoss
                 draggable
                 pauseOnHover
-                theme="light"
+                theme="dark"
             />
             {/* Same as */}
         </>

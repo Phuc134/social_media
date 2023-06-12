@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const { createChatGroup } = require("./chatGroupController");
+const ChatGroup = require('../models/ChatGroup');
 
 exports.searchUser = async (req, res) => {
     try {
@@ -66,12 +67,17 @@ exports.removeFriendOfUser = async (req, res) => {
     try {
         const userId = mongoose.Types.ObjectId(req.body.idUser);
         const idFriend = mongoose.Types.ObjectId(req.body.idFriend);
-        console.log('1', userId);
-        console.log(idFriend);
         const user = await User.findOne({ _id: userId });
         const friend = await User.findOne({ _id: idFriend });
-        console.log(user);      
-        console.log(friend);
+        ChatGroupToDelete = await ChatGroup.find({
+            members: {$all: [userId, idFriend]},
+            $expr: { $eq: [{ $size: "$members" }, 2] }
+        });
+        console.log(ChatGroupToDelete);
+        const deleteResult = await ChatGroup.deleteMany({
+            _id: {$in: ChatGroupToDelete.map(group => group._id)}
+        })
+        console.log(deleteResult);
         await User.updateOne(
             { _id: userId },
             { $pull: { friends: idFriend } },
@@ -83,6 +89,7 @@ exports.removeFriendOfUser = async (req, res) => {
                 }
             }
         );
+
         await User.updateOne(
             { _id: idFriend },
             { $pull: { friends: userId } },
@@ -94,9 +101,13 @@ exports.removeFriendOfUser = async (req, res) => {
                 }
             }
         );
+
+
+
         return res.status(200).json("Remove successs");
     }
     catch (e) {
+        console.log(e.message);
         res.status(500).json(e.message);
 
     }

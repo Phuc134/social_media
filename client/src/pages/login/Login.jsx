@@ -24,7 +24,7 @@ export default function Login() {
         <div className="login">
             <div className="loginWrapper">
                 <div className="loginLeft">
-                    <h3 className="loginLogo">FaceBook phake</h3>
+                    <h3 className="loginLogo">Social Website</h3>
                     <span className="loginDesc">
             Hello
           </span>

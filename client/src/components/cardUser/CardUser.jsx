@@ -1,9 +1,14 @@
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import axios from "axios";
+import { getSocketInstance } from "../../connectSocket";
+import { useEffect } from "react";
 
 export default function CardUser({refreshPage, imgUser, user, idUser, url, setListCard}) {
-
+    const getSocket = async () => {
+      const socket = await getSocketInstance();
+      return socket;
+    }
     const handleOnClick = async () => {
         console.log(idUser);
         console.log(user._id);
@@ -12,7 +17,9 @@ export default function CardUser({refreshPage, imgUser, user, idUser, url, setLi
         })
         await axios.post(`http://localhost:8800/api/users/friend`,{idUser: idUser, idFriend: user._id})
         axios.get(`/users/get-pending/${JSON.parse(localStorage.getItem("user"))._id}`)
-            .then(res => {
+            .then(async(res) => {
+                const socket = await getSocket();
+                socket.emit("accept_friend",{user_id: user._id})
                 setListCard(res.data[0] ? res.data[0].listReceive : res.data);
             })
 
